@@ -26,6 +26,7 @@ var OpCodes = []string{
 	"HLT",
 }
 
+// fibonacci program
 var Program = []byte{
 	0x51, // 0 LDI 1
 	0xe0, // 1 OUT
@@ -42,10 +43,11 @@ var Program = []byte{
 	0x62, // c JMP 2
 	0xf0, // d HLT 0
 	0x01, // e 1
-	0x01, // f 1
+	0x00, // f 0
 }
 
-// Program := []byte{
+// // One of Ben Eater's demo programs
+// var Program = []byte{
 // 	0x1e, // 0x0	LDA 14  0x1e
 // 	0x2f, // 0x2	ADD 15  0x2f
 // 	0xe0, // 0x4	OUT		0xe0
@@ -314,6 +316,30 @@ func BuildRom() *[1024]byte {
 			}
 		}
 	}
+
+	// print out ROM like `hexdump -Cv`
+	for i, b := range RomBytes {
+		if i%16 == 0 {
+			fmt.Printf("%08x  ", i)
+		}
+		if (i+1)%8 == 0 {
+			fmt.Printf("%02x  ", b)
+		} else {
+			fmt.Printf("%02x ", b)
+		}
+		if (i+1)%16 == 0 || i+1 == len(RomBytes) {
+			fmt.Print("|")
+			for j := i - 15; j <= i; j++ {
+				if RomBytes[j] >= 0x20 && RomBytes[j] <= 0x7e {
+					fmt.Printf("%c", RomBytes[j])
+				} else {
+					fmt.Print(".")
+				}
+			}
+			fmt.Println("|")
+		}
+	}
+	fmt.Printf("%08x\n", len(RomBytes))
 
 	// write the ROM to a file
 	err := os.WriteFile("rom.bin", RomBytes[:], 0666)
